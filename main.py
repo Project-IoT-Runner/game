@@ -9,10 +9,10 @@ class Player():
         pass
     
     def move_up(self):
-        print('Up')
+        led.value(1)
     
     def move_down(self):
-        print('Down')
+        led.value(0)
     
     def get_collition(self) -> bool:
         pass
