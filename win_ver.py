@@ -20,9 +20,13 @@ class Player():
     
     def update(self):
         if get_input(KEY_UP):
-            self.position[1] -= MOVE_SPEED
+            if self.position[1] - MOVE_SPEED >= 1:
+                self.position[1] -= MOVE_SPEED
+            else: self.position[1] = 1
         if get_input(KEY_DOWN):
-            self.position[1] += MOVE_SPEED
+            if self.position[1] + MOVE_SPEED <= self.game.size[1] - self.size[1]:
+                self.position[1] += MOVE_SPEED
+            else: self.position[1] = self.game.size[1] - self.size[1]
 
     def render(self):
         s_x = self.position[0]
