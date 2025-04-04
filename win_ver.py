@@ -4,7 +4,7 @@ from drawille import Canvas
 MAX_FPS = 20
 KEY_UP = 'w'
 KEY_DOWN = 's'
-MOVE_SPEED = 10
+MOVE_SPEED = 5 # pixels per tick
 
 def get_input(key:str) -> bool:
     if keyboard.is_pressed(key):
@@ -46,8 +46,10 @@ class Game():
         self.size = (size[0]+2, size[1]+2)
         self.player = Player(self, (10, self.size[1]/2))
         self.screen = screen
+        self.score = 0
 
     def draw_border(self):
+        # Draw full border
         for x in range(self.size[0]): # Draw top row
             self.screen.set(x, 0)
         for x in range(self.size[0]): # Draw bottom row
@@ -57,16 +59,21 @@ class Game():
         for y in range(self.size[1]): # Draw right column
             self.screen.set(self.size[0], y)
         
-    def setup(self):
-        self.screen.clear()
-        self.draw_border()
+        for x in range(self.size[0]): # Draw text seperation
+            self.screen.set(x, 10)
+
+    def draw_score(self):
+        self.screen.set_text(5, 5, f'SCORE: {self.score}')
 
     def update(self):
         print(self.screen.frame())
 
     def game(self): # Code the game here
-        self.setup()
+        self.screen.clear()
+        self.draw_border()
         self.player.main()
+        self.score += 1
+        self.draw_score()
     
 
 game = Game()
