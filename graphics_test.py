@@ -6,7 +6,6 @@ from drawille import Canvas
 from math import sin, radians
 
 c = Canvas()
-
 for x in range(0, 3000, 10):
     c.set(x / 10, 10 + sin(radians(x)) * 10)
 
