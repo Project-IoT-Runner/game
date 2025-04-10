@@ -1,5 +1,5 @@
 from __future__ import print_function
-import keyboard, time, random,sys
+import keyboard, time, random,sys,os
 from drawille import Canvas # this is what's used to draw
 
 MAX_FPS = 10
@@ -184,6 +184,7 @@ class Game():
 
             # Game starts here
             # clear last frame
+            os.system('cls')
             self.screen.clear()
             self.draw_border()
 
