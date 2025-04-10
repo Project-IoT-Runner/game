@@ -240,6 +240,8 @@ class Game():
             ]
         for enemy in self.enemies:
             enemy.speed = MOVE_SPEED_ENEMIES
+
+        self.player.position[1] = self.size[1]/2
         
 
 class MainMenu():
