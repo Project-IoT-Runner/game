@@ -55,8 +55,10 @@ class Obstacle():
         RETURNS:
             Bool: if this enemy is colliding with the player
         """
+        # check for horisontal collision
         if self.position[0] <= self.player.position[0] + self.player.size[0] and self.position[0] + self.size[0] >= self.player.position[0]:
-            print('test')
+            if self.position[1] <= self.player.position[1] + self.player.size[1] and self.position[1] + self.size[1] >= self.player.position[1]:
+                print('test')
 
     def render(self):
         s_x = self.position[0]
@@ -96,9 +98,11 @@ class Player():
             for y in range(self.size[1]):
                 self.game.screen.set(s_x + x, s_y + y)
 
-    
-    def main(self):
+    def main(self) -> None:
+        """Handles the Player() functions that run every frame"""
+        # update position based on movement
         self.update()
+        # write pixels to frame
         self.render()
 
 
@@ -137,36 +141,40 @@ class Game():
         print(self.screen.frame())
 
     def game(self): # Code the game here
-        # clear last frame
-        self.screen.clear()
-        self.draw_border()
+        while True: #game loop
+            # Set up for dtime
+            process_time_start = time.time_ns() # starts timer in nanoseconds
 
-        # update all entities
-        self.player.main()
-        self.enemy1.main()
+            # Stop if q is pressed
+            if get_input('q'):
+                break
 
-        # end of frame
-        self.clear_pixels_offscreen()
-        self.score += 1
-        self.draw_score()
+            # Game starts here
+            # clear last frame
+            self.screen.clear()
+            self.draw_border()
+
+            # update all entities
+            self.player.main()
+            self.enemy1.main()
+
+            # end of frame
+            self.clear_pixels_offscreen()
+            self.score += 1
+            self.draw_score()
+
+
+            # End of loop
+            game.update() # Show screen in terminal
+            process_time_end = time.time_ns() # End the timer
+            # Calculate how long the program took to run in nanoseconds
+            process_time = process_time_end - process_time_start
+            process_time = process_time / 1000000000 # convert to seconds
+            time.sleep(float(1/MAX_FPS) - process_time) # Sleep for long enough that the loop runs at MAX_FPS
+            #break
+        
 
     
 
 game = Game()
-while True: #game loop
-    # Set up for dtime
-    process_time_start = time.time_ns()
-    # Stop if q is pressed
-    if get_input('q'):
-        break
-
-    # Game starts here
-    game.game()
-
-
-    # End of loop
-    game.update() # Show screen in terminal
-    process_time_end = time.time_ns() # End the timer
-    process_time = process_time_end - process_time_end # Calculate how long the program took to run
-    time.sleep((1/MAX_FPS) - process_time) # Sleep for long enough that the loop runs at MAX_FPS
-    #break
+game.game()
