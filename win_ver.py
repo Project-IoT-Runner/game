@@ -224,7 +224,22 @@ class Game():
             process_time = process_time / 1000000000 # convert to seconds
             if process_time <= 1/MAX_FPS:
                 time.sleep(float(1/MAX_FPS) - process_time) # Sleep for long enough that the loop runs at MAX_FPS
-            #break
+
+    def reset(self):
+        self.enemies = [
+            Obstacle(self, self.player, (self.size[0], self.random_height())),
+            Obstacle(self, self.player, (self.size[0], self.random_height())),
+            Obstacle(self, self.player, (self.size[0], self.random_height())),
+            Obstacle(self, self.player, (self.size[0], self.random_height())),
+            Obstacle(self, self.player, (self.size[0], self.random_height())),
+            Obstacle(self, self.player, (self.size[0], self.random_height())),
+            Obstacle(self, self.player, (self.size[0], self.random_height())),
+            Obstacle(self, self.player, (self.size[0], self.random_height())),
+            Obstacle(self, self.player, (self.size[0], self.random_height())),
+            Obstacle(self, self.player, (self.size[0], self.random_height()))
+            ]
+        for enemy in self.enemies:
+            enemy.speed = MOVE_SPEED_ENEMIES
         
 
 class MainMenu():
@@ -290,6 +305,7 @@ menu = MainMenu(game.screen, game.size)
 while True:
     menu.main(game.score)
     game.score = 0
+    game.reset()
     game.game()
     game.screen.clear()
     print(game.screen.frame())
