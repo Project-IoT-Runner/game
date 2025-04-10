@@ -3,12 +3,13 @@ import keyboard, time, random,sys
 from drawille import Canvas # this is what's used to draw
 
 MAX_FPS = 10
-KEY_UP = 'w'
-KEY_DOWN = 's'
+KEY_UP = 'up'
+KEY_DOWN = 'down'
 MOVE_SPEED = 5 # pixels per tick
 MOVE_SPEED_ENEMIES = 2 # pixels per tick, speed starts at this value
 SCREEN_OFFSET = 8 # this makes sure that the enemies don't push the screen arround
 TEXT_SEPERATOR_HEIGT = 10
+ENEMY_SPEED_MULTIPLIER = 0.005
 
 ENTITY_SPRITE = [
                 '#OO##OO#',
@@ -81,7 +82,7 @@ class Obstacle():
         return True
     
     def update(self):
-        self.position[0] -= MOVE_SPEED_ENEMIES
+        self.position[0] -= int(self.speed)
         if self.get_on_screen() == False:
             self.position[0] = self.game.size[0]+SCREEN_OFFSET - 1 # minus one to account for the border
             self.position[1] = self.game.random_height()
@@ -197,6 +198,7 @@ class Game():
             else:
                 for enemy in self.enemies:
                     enemy.main()
+                    enemy.speed += ENEMY_SPEED_MULTIPLIER
                     # check for collisions
                     if enemy.is_colliding():
                         self.colliding = True
@@ -270,6 +272,7 @@ class MainMenu():
         self.draw_border()
         self.draw_text(score)
         self.update()
+        time.sleep(1)
         while True:
             # Stop if q is pressed
             if get_input('q'):
