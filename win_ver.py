@@ -184,7 +184,7 @@ class Game():
 
             # Game starts here
             # clear last frame
-            os.system('cls')
+            os.system('cls||clear')
             self.screen.clear()
             self.draw_border()
 
