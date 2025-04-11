@@ -154,6 +154,9 @@ class Game():
     def draw_score(self):
         self.screen.set_text(5+SCREEN_OFFSET, 5, f'SCORE: {self.score}')
 
+    def draw_level(self):
+        self.screen.set_text(140+SCREEN_OFFSET, 5, f'LEVEL: {int(self.enemies[0].speed)-1}')
+
     def clear_pixels_offscreen(self):
         for y in range(self.size[1]):
             for x in range(SCREEN_OFFSET):
@@ -210,6 +213,7 @@ class Game():
             self.clear_pixels_offscreen()
             self.score += 1
             self.draw_score()
+            self.draw_level()
 
             # check whether a collision has been detected this frame
             if self.colliding:
