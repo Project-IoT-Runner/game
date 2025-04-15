@@ -266,7 +266,7 @@ class MainMenu():
             self.screen.set(self.size[0]+SCREEN_OFFSET, y)
 
     def draw_text(self, score):
-        self.screen.set_text(16,4," `7MM\"\"\"Mq.`7MMF'   `7MF'`7MN.   `7MF'`7MN.   `7MF'`7MM\"\"\"YMM  `7MM\"\"\"Mq.")
+        self.screen.set_text(16,4,"`7MM\"\"\"Mq.`7MMF'   `7MF'`7MN.   `7MF'`7MN.   `7MF'`7MM\"\"\"YMM  `7MM\"\"\"Mq.")
         self.screen.set_text(16,8,"  MM   `MM. MM       M    MMN.    M    MMN.    M    MM    `7    MM   `MM.")
         self.screen.set_text(16,12,"  MM   ,M9  MM       M    M YMb   M    M YMb   M    MM   d      MM   ,M9")
         self.screen.set_text(16,16,"  MMmmdM9   MM       M    M  `MN. M    M  `MN. M    MMmmMM      MMmmdM9")
