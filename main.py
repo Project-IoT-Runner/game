@@ -61,15 +61,15 @@ class Player():
         self.screen = screen
         player_bitmap = displayio.Bitmap(self.size[0], self.size[1], 1)
         player_palette = displayio.Palette(1)
-        player_palette[0] = 0xFFFFFF
+        player_palette[0] = 0xFF0000
         self.sprite = displayio.TileGrid(player_bitmap, pixel_shader=player_palette, x=int(self.position[0]), y=int(self.position[1]))
         self.screen.append(self.sprite)
     
     def update(self):
         if not btn_up.value:
-            if self.screen[self.screen.index(self.sprite)].y - MOVE_SPEED >= 0:
+            if self.screen[self.screen.index(self.sprite)].y - MOVE_SPEED >= TEXT_SEPERATOR_HEIGT +1:
                 self.screen[self.screen.index(self.sprite)].y -= int(MOVE_SPEED)
-            else: self.screen[self.screen.index(self.sprite)].y = 0
+            else: self.screen[self.screen.index(self.sprite)].y = TEXT_SEPERATOR_HEIGT +1
         if not btn_down.value:
             if self.screen[self.screen.index(self.sprite)].y + MOVE_SPEED <= self.game.size[1] - self.size[1]:
                 self.screen[self.screen.index(self.sprite)].y += int(MOVE_SPEED)
@@ -149,12 +149,20 @@ class Game():
         self.TIME_DIFF_ENEMIES = round((self.size[0]/self.enemies[0].speed) / len(self.enemies))
         
         # create the background
-        color_bitmap = displayio.Bitmap(self.size[0], self.size[1], 1)
-        color_palette = displayio.Palette(1)
-        color_palette[0] = 0x000000
+        bg_bitmap = displayio.Bitmap(self.size[0], self.size[1], 1)
+        bg_palette = displayio.Palette(1)
+        bg_palette[0] = 0x000000
 
-        bg_sprite = displayio.TileGrid(color_bitmap, pixel_shader=color_palette, x=0, y=0)
+        bg_sprite = displayio.TileGrid(bg_bitmap, pixel_shader=bg_palette, x=0, y=0)
         self.screen.insert(0, bg_sprite)
+        
+        # create the text divider
+        divider_bitmap = displayio.Bitmap(self.size[0], 1, 1)
+        divider_palette = displayio.Palette(1)
+        divider_palette[0] = 0xFFFFFF
+        
+        divider_sprite = displayio.TileGrid(divider_bitmap, pixel_shader=divider_palette, x=0, y=TEXT_SEPERATOR_HEIGT)
+        self.screen.insert(1, divider_sprite)
         
     def add_to_splash(self, sprite):
         self.splash_list.append(sprite)
