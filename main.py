@@ -22,10 +22,11 @@ display = ST7735R(display_bus, width=160, height=128, rotation=90, bgr=True)
 MAX_FPS = 20
 KEY_UP = board.GP0 # GP0
 KEY_DOWN = board.GP1 # GP1
-MOVE_SPEED = 5 # pixels per tick
-MOVE_SPEED_ENEMIES = 2 # pixels per tick, speed starts at this value
+MOVE_SPEED = 3 # pixels per tick
+MOVE_SPEED_ENEMIES = 1 # pixels per tick, speed starts at this value
 TEXT_SEPERATOR_HEIGT = 10
-ENEMY_SPEED_MULTIPLIER = 0.005
+ENEMY_SPEED_MULTIPLIER = 0.0025
+ENEMY_AMOUNT = 1
 
 btn_up = digitalio.DigitalInOut(KEY_UP)
 btn_up.switch_to_input(pull=digitalio.Pull.UP)
@@ -43,6 +44,12 @@ ENTITY_SPRITE = [
                 'O######O',
                 '#OO##OO#'
                 ]
+
+def load_sprite(sprite, group):
+    for y in range(len(sprite)):
+        for x in range(len(ENTITY_SPRITE[y])):
+            if ENTITY_SPRITE[y][x] == '#':
+                group.append(displayio.TileGrid(displayio.Bitmap(1, 1, 1), pixel_shader=shader, x=x, y=y))
 
 # This is the player
 class Player():
@@ -74,21 +81,77 @@ class Player():
         self.update()
 
 
+# These are enemies
+class Obstacle():
+    def __init__(self, game, screen, player, start_position, size=(8,8), sprite=ENTITY_SPRITE):
+        self.position = list(start_position)
+        self.player = player
+        self.size = size
+        self.sprite = sprite
+        self.game = game
+        self.screen = self.game.screen
+        self.speed = MOVE_SPEED_ENEMIES
+        enemy_bitmap = displayio.Bitmap(self.size[0], self.size[1], 1)
+        enemy_palette = displayio.Palette(1)
+        enemy_palette[0] = 0x00FF00
+        self.enemy_sprite = displayio.TileGrid(enemy_bitmap, pixel_shader=enemy_palette, x=int(self.position[0]), y=int(self.position[1]))
+        self.screen.append(self.enemy_sprite)
 
+    def get_on_screen(self):
+        """
+        RETURNS:
+            Bool: True if Entity is on screen
+        """
+        if self.screen[self.screen.index(self.enemy_sprite)].x < (-1)*self.size[0]:
+            return False
+        return True
+    
+    def update(self):
+        self.screen[self.screen.index(self.enemy_sprite)].x -= int(self.speed)
+        if not self.get_on_screen():
+            self.screen[self.screen.index(self.enemy_sprite)].x = self.position[0]
+            self.screen[self.screen.index(self.enemy_sprite)].y = self.game.random_height()
+
+    def is_colliding(self):
+        """
+        RETURNS:
+            Bool: if this enemy is colliding with the player
+        """
+        # check for horisontal collision
+        selfx = self.screen[self.screen.index(self.enemy_sprite)].x
+        selfy = self.screen[self.screen.index(self.enemy_sprite)].y
+        playerx = self.screen[self.screen.index(self.player.sprite)].x
+        playery = self.screen[self.screen.index(self.player.sprite)].y
+        
+        if selfx <= playerx + self.player.size[0] and selfx + self.size[0] >= playerx:
+            if selfy <= playery + self.player.size[1] and selfy + self.size[1] >= playery:
+                return True
+        return False
+
+    def render(self):
+        pass
+    
+    def main(self):
+        self.update()
+        self.render()
+        
+        
 # this is the main game
 class Game():
     def __init__(self, size=(160, 128)):
-        self.size = (size[0]+2, size[1]+2)
+        self.size = size
         self.screen = displayio.Group()
         display.root_group = self.screen
-        # create the player
         self.player = Player(self, self.screen, (10, self.size[1]/2))
         self.score = 0
-        
+        self.enemies = [Obstacle(self, self.screen, self.player, (160, self.random_height())) for i in range(ENEMY_AMOUNT)]
         self.colliding = False
+        self.TIME_DIFF_ENEMIES = round((self.size[0]/self.enemies[0].speed) / len(self.enemies))
+        
+        # create the background
         color_bitmap = displayio.Bitmap(self.size[0], self.size[1], 1)
         color_palette = displayio.Palette(1)
-        color_palette[0] = 0x000000  # Bright Green
+        color_palette[0] = 0x000000
 
         bg_sprite = displayio.TileGrid(color_bitmap, pixel_shader=color_palette, x=0, y=0)
         self.screen.insert(0, bg_sprite)
@@ -102,7 +165,7 @@ class Game():
             int: A valid random height
         """
         # plus and minus one to account for the border
-        value = random.randrange(0+TEXT_SEPERATOR_HEIGT + 1, self.size[1]-len(ENTITY_SPRITE) - 1)
+        value = random.randrange(0+TEXT_SEPERATOR_HEIGT, self.size[1]-len(ENTITY_SPRITE))
         return value
     
     def clear_screen(self):
@@ -116,8 +179,28 @@ class Game():
             process_time_start = time.monotonic_ns() # starts timer in nanoseconds
 
             # Game starts here
-            self.player.main()
+            # update all entities
+            enemy_timer += 1/self.TIME_DIFF_ENEMIES
+            if int(enemy_timer) < len(self.enemies):
+                for enemy_i in range(int(enemy_timer)):
+                    self.enemies[enemy_i].main()
+                    # check for collisions
+                    if self.enemies[enemy_i].is_colliding():
+                        self.colliding = True
+            else:
+                for enemy in self.enemies:
+                    enemy.main()
+                    enemy.speed += ENEMY_SPEED_MULTIPLIER
+                    # check for collisions
+                    if enemy.is_colliding():
+                        self.colliding = True
 
+            if self.colliding == True:
+                self.colliding = False
+                print('Test')
+            
+            self.player.main()
+            
             # end of frame
             self.score += 1
 
