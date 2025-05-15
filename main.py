@@ -48,7 +48,9 @@ ENTITY_SPRITE = [
                 '#OO##OO#'
                 ]
 
-def load_sprite(sprite, group):
+def load_sprite(sprite, group, color):
+    shader = displayio.Palette(1)
+    shader[0] = color
     for y in range(len(sprite)):
         for x in range(len(ENTITY_SPRITE[y])):
             if ENTITY_SPRITE[y][x] == '#':
@@ -94,10 +96,10 @@ class Obstacle():
         self.game = game
         self.screen = self.game.screen
         self.speed = MOVE_SPEED_ENEMIES
-        enemy_bitmap = displayio.Bitmap(self.size[0], self.size[1], 1)
-        enemy_palette = displayio.Palette(1)
-        enemy_palette[0] = 0x00FF00
-        self.enemy_sprite = displayio.TileGrid(enemy_bitmap, pixel_shader=enemy_palette, x=int(self.position[0]), y=int(self.position[1]))
+        self.enemy_sprite = displayio.Group()
+        load_sprite(self.sprite, self.enemy_sprite, 0x00FF00)
+        self.enemy_sprite.x= self.position[0]
+        self.enemy_sprite.y = self.position[1]
         self.screen.append(self.enemy_sprite)
 
     def get_on_screen(self):
