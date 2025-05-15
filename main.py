@@ -3,6 +3,7 @@ from adafruit_display_text import label
 from fourwire import FourWire
 
 from adafruit_st7735r import ST7735R
+from config import get_sprite, get_mock_sprite
 
 # Release any resources currently in use for the displays
 displayio.release_displays()
@@ -33,6 +34,8 @@ btn_up.switch_to_input(pull=digitalio.Pull.UP)
 
 btn_down = digitalio.DigitalInOut(KEY_DOWN)
 btn_down.switch_to_input(pull=digitalio.Pull.UP)
+
+PLAYER_SPRITE = get_mock_sprite()
 
 ENTITY_SPRITE = [
                 '#OO##OO#',
@@ -164,6 +167,28 @@ class Game():
         divider_sprite = displayio.TileGrid(divider_bitmap, pixel_shader=divider_palette, x=0, y=TEXT_SEPERATOR_HEIGT)
         self.screen.insert(1, divider_sprite)
         
+        # create perm text
+        text_group = displayio.Group(scale=1, x=1, y=5)
+        text = "SCORE:          LVL:"
+        text_area = label.Label(terminalio.FONT, text=text, color=0xFFFFFF)
+        text_group.append(text_area)  # Subgroup for text scaling
+        self.screen.append(text_group)
+        
+        # create numbers
+        number_group_score = displayio.Group(scale=1, x=40, y=5)
+        score_number = f'{self.score}'
+        self.score_label = label.Label(terminalio.FONT, text=score_number, color=0xFFFFFF)
+        number_group_score.append(self.score_label)  # Subgroup for text scaling
+        self.screen.append(number_group_score)
+        
+        # {int(self.enemies[0].speed)-1}
+        number_group_lvl = displayio.Group(scale=1, x=125, y=5)
+        lvl_number = f'{int(self.enemies[0].speed)-1}'
+        self.lvl_label = label.Label(terminalio.FONT, text=lvl_number, color=0xFFFFFF)
+        number_area_lvl = self.lvl_label
+        number_group_lvl.append(number_area_lvl)  # Subgroup for text scaling
+        self.screen.append(number_group_lvl)
+        
     def add_to_splash(self, sprite):
         self.splash_list.append(sprite)
     
@@ -179,6 +204,12 @@ class Game():
     def clear_screen(self):
         self.splash_list = []
         self.splash = displayio.Group()
+        
+    def draw_text(self):
+        pass
+    
+    def replace_player_sprite(self):
+        pass
 
     def game(self) -> None: # Code the game here
         enemy_timer = 0
@@ -187,6 +218,9 @@ class Game():
             process_time_start = time.monotonic_ns() # starts timer in nanoseconds
 
             # Game starts here
+            
+            self.draw_text()
+            
             # update all entities
             enemy_timer += 1/self.TIME_DIFF_ENEMIES
             if int(enemy_timer) < len(self.enemies):
@@ -225,6 +259,7 @@ class Game():
             process_time = process_time / 1000000000 # convert to seconds
             if process_time <= 1/MAX_FPS:
                 time.sleep(float(1/MAX_FPS) - process_time) # Sleep for long enough that the loop runs at MAX_FPS
+            
 
     def reset(self):
         self.player.position = self.size[1]/2
@@ -235,3 +270,4 @@ while True:
     game.score = 0
     game.reset()
     game.game()
+    
