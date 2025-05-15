@@ -26,8 +26,8 @@ KEY_DOWN = board.GP1 # GP1
 MOVE_SPEED = 3 # pixels per tick
 MOVE_SPEED_ENEMIES = 1 # pixels per tick, speed starts at this value
 TEXT_SEPERATOR_HEIGT = 10
-ENEMY_SPEED_MULTIPLIER = 0.0025
-ENEMY_AMOUNT = 1
+ENEMY_SPEED_MULTIPLIER = 0.002
+ENEMY_AMOUNT = 5
 
 btn_up = digitalio.DigitalInOut(KEY_UP)
 btn_up.switch_to_input(pull=digitalio.Pull.UP)
@@ -198,7 +198,7 @@ class Game():
             int: A valid random height
         """
         # plus and minus one to account for the border
-        value = random.randrange(0+TEXT_SEPERATOR_HEIGT, self.size[1]-len(ENTITY_SPRITE))
+        value = random.randrange(1+TEXT_SEPERATOR_HEIGT, self.size[1]-len(ENTITY_SPRITE))
         return value
     
     def clear_screen(self):
@@ -213,7 +213,8 @@ class Game():
 
     def game(self) -> None: # Code the game here
         enemy_timer = 0
-        while True: #game loop
+        running = True
+        while running: #game loop
             # Set up for dtime
             process_time_start = time.monotonic_ns() # starts timer in nanoseconds
 
@@ -236,21 +237,17 @@ class Game():
                     # check for collisions
                     if enemy.is_colliding():
                         self.colliding = True
-
-            if self.colliding == True:
-                self.colliding = False
-                print('Test')
             
             self.player.main()
             
             # end of frame
             self.score += 1
-
-            # check whether a collision has been detected this frame
-            #if self.colliding:
-            #    self.colliding = False
-            #    break # returns to main menu
-
+            
+            if self.colliding == True:
+                self.colliding = False
+                running = False
+                break
+                
 
             # End of loop
             process_time_end = time.monotonic_ns() # End the timer
@@ -263,6 +260,10 @@ class Game():
 
     def reset(self):
         self.player.position = self.size[1]/2
+        for enemy in self.enemies:
+            enemy.enemy_sprite.x = 160
+            enemy.enemy_sprite.y = self.random_height()
+            enemy.speed = MOVE_SPEED_ENEMIES
 
 game = Game()
 
@@ -270,4 +271,5 @@ while True:
     game.score = 0
     game.reset()
     game.game()
+    print('Test')
     
