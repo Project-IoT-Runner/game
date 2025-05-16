@@ -26,8 +26,8 @@ KEY_DOWN = board.GP1 # GP1
 MOVE_SPEED = 3 # pixels per tick
 MOVE_SPEED_ENEMIES = 1 # pixels per tick, speed starts at this value
 TEXT_SEPERATOR_HEIGT = 10
-ENEMY_SPEED_MULTIPLIER = 0.002
-ENEMY_AMOUNT = 5
+ENEMY_SPEED_MULTIPLIER = 0.003
+ENEMY_AMOUNT = 7
 
 btn_up = digitalio.DigitalInOut(KEY_UP)
 btn_up.switch_to_input(pull=digitalio.Pull.UP)
@@ -247,7 +247,7 @@ class Game():
             
             if self.colliding == True:
                 self.colliding = False
-                running = False
+                print(self.score)
                 break
                 
 
@@ -273,5 +273,4 @@ while True:
     game.score = 0
     game.reset()
     game.game()
-    print('Test')
     
