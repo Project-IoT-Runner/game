@@ -35,7 +35,7 @@ btn_up.switch_to_input(pull=digitalio.Pull.UP)
 btn_down = digitalio.DigitalInOut(KEY_DOWN)
 btn_down.switch_to_input(pull=digitalio.Pull.UP)
 
-player_sprite = get_mock_sprite()['sprite']['pixels']
+player_sprite = get_sprite()['sprite']['pixels']
 
 ENTITY_SPRITE = [
                 '#OO##OO#',
@@ -346,7 +346,7 @@ class MainMenu():
                 time.sleep(float(1/MAX_FPS) - process_time) # Sleep for long enough that the loop runs at MAX_FPS
                 
     def update_sprite(self):        
-        player_sprite = load_sprite.prep_sprite(get_mock_sprite()['sprite']['pixels'])
+        player_sprite = load_sprite.prep_sprite(get_sprite()['sprite']['pixels'])
         load_sprite_old(player_sprite, game.player.sprite, 0xFF7700)
         game.player.sprite.x = game.player.position[0]
         game.player.sprite.y = game.player.position[1]
