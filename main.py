@@ -317,7 +317,6 @@ class MainMenu():
         ticks_up_button_held = 0
         while True:
             process_time_start = time.monotonic_ns()
-            print(ticks_down_button_held)
             
             if not btn_down.value:
                 ticks_down_button_held += 1
